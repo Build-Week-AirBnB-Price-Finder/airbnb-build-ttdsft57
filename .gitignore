@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# pipenv requirements (MUST OMIT FOR HEROKU DEPLOY
+Pipfile.lock
+
+# personal vscode settings
+.vscode

@@ -11,9 +11,11 @@ flask-sqlalchemy = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
 joblib = "*"
+sklearn = "*"
+category-encoders = "*"
 
 [dev-packages]
 autopep8 = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"

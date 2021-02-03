@@ -5,14 +5,24 @@
     <h2>{{ title }}</h2>
     <p>{{ message }}</p>
     <form action="/add_listing" method="post">
-        {% for feature in forms %}
-        <label for="{{ feature }}">{{ feature }}</label>
-        <input type="text" name="{{ feature }}">
+        {% for feature, attributes in forms.items() %}
+        {% if attributes['type']=="number" %}
+        <label for="{{ feature }}">{{ attributes['label'] }}</label>
+        <input type="number" name="{{ feature }}" min="{{ attributes['min'] }}" max="{{ attributes['max'] }}"
+            step="{{ attributes['step'] }}">
+        {% elif attributes['type']=="choice" %}
+        <label for="{{ feature }}">{{ attributes['label'] }}</label>
+        <select name="{{ feature }}" id="{{ feature }}">
+            {% for option in attributes['options'] %}
+            <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select>
+
+        {% endif %}
         {% endfor %}
         <input type="submit" value="Add Listing">
     </form>
 
-    <!--TODO: Add forms for all features to be collected-->
 </div>
 
 {% endblock %}

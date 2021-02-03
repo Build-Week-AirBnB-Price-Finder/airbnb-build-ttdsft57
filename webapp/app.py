@@ -4,7 +4,7 @@ from os import getenv
 
 from flask import Flask, render_template, request
 
-from .models import Host, Listing
+from .models import DB, Host, Listing
 
 
 def create_app():
@@ -13,8 +13,12 @@ def create_app():
     app = Flask(__name__)
 
     # Set DB environment variables
-    app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+    # getenv("DATABASE_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    # Initialize SQLAlchemy DB
+    DB.init_app(app)
 
     # Features used
     # Dictionary takes
@@ -112,5 +116,11 @@ def create_app():
     def examples():
         """Adds examples to the database"""
         return "Not this time", 404
+
+    @app.route('/test-db')
+    def test_db():
+        DB.drop_all()
+        DB.create_all()
+        return "DB created"
 
     return app

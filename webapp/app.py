@@ -4,7 +4,7 @@ from os import getenv
 
 from flask import Flask, render_template, request
 
-from .models.hosts import Host, Listing
+from .models import Host, Listing
 
 
 def create_app():

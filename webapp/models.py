@@ -1,4 +1,4 @@
-"""SQLAlchemy models for AIrBnB hosts"""
+"""SQLAlchemy models for AIrBnB listings"""
 
 from flask_sqlalchemy import SQLAlchemy
 

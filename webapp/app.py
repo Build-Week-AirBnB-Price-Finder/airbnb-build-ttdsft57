@@ -2,6 +2,7 @@
 
 from os import getenv
 
+import requests
 from flask import Flask, render_template, request
 
 from .models.hosts import Host, Listing
@@ -15,12 +16,20 @@ def create_app():
     # Set DB environment variables
     app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+    features = ["id", "room_type", "accommodates", "bathrooms", "bed_type",
+                "cancellation_policy", "cleaning_fee", "city",
+                "instant_bookable", "number_of_reviews", "review_scores_rating",
+                "bedrooms", "beds"]
+
     # Save data (for development purposes)
     listing = {}
 
     @app.route('/')
     def root():
         """WebApp home page"""
+        # Show the actual lanfding page with fields to enter
         return render_template('index.html', title="Home")
 
     @app.route('/add_listing', methods=["GET", "POST"])

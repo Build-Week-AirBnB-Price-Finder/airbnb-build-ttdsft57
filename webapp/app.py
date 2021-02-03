@@ -1,10 +1,17 @@
 """Main app/routing file for AIrBnB Price Finder."""
 
+from category_encoders import OrdinalEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import make_pipeline
+from sklearn.ensemble import RandomForestRegressor
+import pandas as pd
 from os import getenv
-
+import numpy as np
+import os
+from joblib import load
 from flask import Flask, render_template, request
-
 from .models import DB, Host, Listing
+from tempfile import mkdtemp
 
 
 def create_app():
@@ -115,7 +122,13 @@ def create_app():
     @app.route('/examples')
     def examples():
         """Adds examples to the database"""
-        return "Not this time", 404
+        #Model order: propertytype roomtype accom bathrooms bedtype cancell cleaning city inst numrev revscore bedrooms beds
+        features_populated = {"property_type": ['Apartment'], "room_type": ["Entire home/apt"], "accommodates": [16], "bathrooms": [8], "bed_type": ['Real Bed'], "cancellation_policy": ['strict'], "cleaning_fee": [True], "city": ['NYC'], "instant_bookable": [True], "number_of_reviews": [605], "review_scores_rating": [100], "bedrooms": [10], "beds": [18]}
+        
+        test_array = pd.DataFrame(data=features_populated)
+        airbnb_model = load("model.joblib")
+        get_price = str(airbnb_model.predict(test_array))
+        return get_price
 
     @app.route('/test-db')
     def test_db():

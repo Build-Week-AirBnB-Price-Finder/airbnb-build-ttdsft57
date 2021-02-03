@@ -16,16 +16,64 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    # TODO - convert features list into a features dictionary where the features
-    #       are the keys and the values are:
-    #           - lists of possible categories for categorical features
-    #           - default values for continuous quantitative features
-    #       Then change the /add_listing and listing.html to accept a dictionary
-    #           in order to create the input forms
-    features = ["id", "room_type", "accommodates", "bathrooms", "bed_type",
-                "cancellation_policy", "cleaning_fee", "city",
-                "instant_bookable", "number_of_reviews", "review_scores_rating",
-                "bedrooms", "beds"]
+    # Features used
+    # Dictionary takes
+    #   - label:            for displaying in listing.html
+    #   - type:             for specifying what type of input form is needed
+    #   - options:          if type is choice
+    #   - min, max, step:   if type is number
+    features = {
+        "city": {"label": "City",
+                 "type": "choice",
+                 "options": ['NYC', 'LA', 'SF', 'DC', 'Chicago']},
+        "room_type": {"label": "Room Type",
+                      "type": "choice",
+                      "options": ['Apartment', 'House', 'Condominium',
+                                  'Townhouse', 'Loft']},
+        "accommodates": {"label": "Accommodates",
+                         "type": "number",
+                         "min": 0,
+                         "max": 16,
+                         "step": 1},
+        "bedrooms": {"label": "Bedrooms",
+                     "type": "number",
+                     "min": 0,
+                     "max": 10,
+                     "step": 1},
+        "beds": {"label": "Beds",
+                 "type": "number",
+                 "min": 0,
+                 "max": 18,
+                 "step": 1},
+        "bathrooms": {"label": "Bathrooms",
+                      "type": "number",
+                      "min": 0,
+                      "max": 8,
+                      "step": 0.5},
+        "bed_type": {"label": "Bed Type",
+                     "type": "choice",
+                     "options": ['Real Bed', 'Futon', 'Pull-out Sofa',
+                                 'Airbed', 'Couch']},
+        "cancellation_policy": {"label": "Cancellation Policy",
+                                "type": "choice",
+                                "options": ['strict', 'flexible', 'moderate',
+                                            'super_strict_30',
+                                            'super_strict_60']},
+        "cleaning_fee": {"label": "Cleaning Fee?",
+                         "type": "choice",
+                         "options": ['true', 'false']},
+        "instant_bookable": {"label": "Instant Bookable?",
+                             "type": "choice",
+                             "options": ['t', 'f']},
+        "number_of_reviews": {"label": "Number of Reviews",
+                              "type": "number",
+                              "min": 0,
+                              "max": 605},
+        "review_scores_rating": {"label": "Review Scores Rating",
+                                 "type": "number",
+                                 "min": 20,
+                                 "max": 100},
+    }
 
     # Save data (for development purposes)
     listing = {}

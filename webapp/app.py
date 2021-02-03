@@ -2,7 +2,6 @@
 
 from os import getenv
 
-import requests
 from flask import Flask, render_template, request
 
 from .models.hosts import Host, Listing
@@ -15,9 +14,14 @@ def create_app():
 
     # Set DB environment variables
     app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
-
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    # TODO - convert features list into a features dictionary where the features
+    #       are the keys and the values are:
+    #           - lists of possible categories for categorical features
+    #           - default values for continuous quantitative features
+    #       Then change the /add_listing and listing.html to accept a dictionary
+    #           in order to create the input forms
     features = ["id", "room_type", "accommodates", "bathrooms", "bed_type",
                 "cancellation_policy", "cleaning_fee", "city",
                 "instant_bookable", "number_of_reviews", "review_scores_rating",
@@ -37,12 +41,10 @@ def create_app():
         """Add a new listing to the database"""
         if request.method == "POST":
             data = request.form.to_dict(flat=False)
-            print(data)
             for key, value in data.items():
-                print(key, value)
-                listing[key] = value
-            print(listing)
-        return render_template('listing.html', title="Add a Listing", message=f"{listing}")
+                listing[key] = value[0]
+            # TODO - save listing into database
+        return render_template('listing.html', title="Add a Listing", forms=features, message=f"{listing}")
 
     @app.route('/predict', methods=["POST"])
     def predict():

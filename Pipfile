@@ -10,6 +10,7 @@ jinja2 = "*"
 flask-sqlalchemy = "*"
 gunicorn = "*"
 psycopg2-binary = "*"
+joblib = "*"
 
 [dev-packages]
 autopep8 = "*"

@@ -4,6 +4,14 @@
 <div id="listing-info">
     <h2>{{ title }}</h2>
     <p>{{ message }}</p>
+    <form action="/add_listing" method="post">
+        {% for feature in forms %}
+        <label for="{{ feature }}">{{ feature }}</label>
+        <input type="text" name="{{ feature }}">
+        {% endfor %}
+        <input type="submit" value="Add Listing">
+    </form>
+
     <!--TODO: Add forms for all features to be collected-->
 </div>
 

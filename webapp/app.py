@@ -40,11 +40,11 @@ def create_app():
     # Save data (for development purposes)
     listing = {}
 
-    @app.route('/')
-    def root():
-        """WebApp home page"""
-        # Show the actual lanfding page with fields to enter
-        return render_template('predict-one.html', forms=features, title="Home")
+    # @app.route('/')
+    # def root():
+    #     """WebApp home page"""
+    #     # Show the actual lanfding page with fields to enter
+    #     return render_template('predict-one.html', forms=features, title="Home")
 
     @app.route('/add_listing', methods=["GET", "POST"])
     def add_listing():
@@ -59,20 +59,21 @@ def create_app():
         """Uses trained model to make prediction on a given listing"""
         return render_template('predict.html', title='Home', message="Coming Soon")
 
-    @app.route('/predict-one', methods=["GET", "POST"])
+    @app.route('/', methods=["GET", "POST"])
     def predict_one():
         """Uses trained model to make prediction on a given listing"""
-
+        # Refresh features
+        features = load_features()
         predict_message = "Please enter your listing details"
         # Retrieve and transform data from forms
         if request.method == "POST":
             # Get listing from web form
             listing = get_input_data()
+            # Save listing for next web form
+            update_default_features(listing)
             # Save listing in database
             DB.session.add(Listing(id=randint(0, 100_000), **listing))
             DB.session.commit()
-            # Save listing for next web form
-            update_default_features(listing)
             # Get predicted rate
             predicted_rate = get_prediction(
                 airbnb_model, transform_input_data(listing))
@@ -191,13 +192,16 @@ def get_prediction(model, listing):
 
 def update_default_features(listing):
     """Updates features.json file with most recent listing"""
-    with open('features.json', 'rw') as file:
+    # Open json file as dictionary
+    with open('features.json', 'r') as file:
         data = json.load(file)
         # make necessary changes
         data['accommodates']['default'] = listing['accommodates']
         data['bedrooms']['default'] = listing['bedrooms']
         data['baths']['default'] = listing['baths']
         data['zip']['default'] = listing['zip']
-
-        # save to file
+        data['property_type']['default'] = listing['property_type']
+        data['room_type']['default'] = listing['room_type']
+    # Save dictionary to json file
+    with open('features.json', 'w+') as file:
         json.dump(data, file)

@@ -153,7 +153,7 @@ def create_app():
 
         return render_template('predict-one.html', title="Price Finder", forms=features, message=predict_message)
 
-    @ app.route('/reset')
+    @app.route('/reset')
     def reset():
         """Resets the Listings and Hosts tables only"""
         # TODO - Drop Listings and Hosts table, create all tables again
@@ -161,7 +161,7 @@ def create_app():
 
     # SECRET ROUTES
 
-    @ app.route('/examples')
+    @app.route('/examples')
     def examples():
         """Adds examples to the database"""
         # Model order: propertytype roomtype accom bathrooms bedtype cancell cleaning city inst numrev revscore bedrooms beds
@@ -184,7 +184,7 @@ def create_app():
         get_price = str(airbnb_model.predict(test_array))
         return get_price
 
-    @ app.route('/test-db')
+    @app.route('/test-db')
     def test_db():
         DB.drop_all()
         DB.create_all()

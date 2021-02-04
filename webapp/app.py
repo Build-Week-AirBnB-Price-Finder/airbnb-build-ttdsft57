@@ -69,8 +69,12 @@ def create_app():
         if request.method == "POST":
             # Get listing from web form
             listing = get_input_data()
+
             # Save listing for next web form
             update_default_features(listing)
+            # Refresh features (for input forms)
+            features = load_features()
+
             # Save listing in database
             DB.session.add(Listing(id=randint(0, 100_000), **listing))
             DB.session.commit()

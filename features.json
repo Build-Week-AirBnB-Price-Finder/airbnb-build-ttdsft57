@@ -54,7 +54,7 @@
         "step": 1,
         "default": 1
     },
-    "bathrooms": {
+    "baths": {
         "label": "Bathrooms",
         "type": "number",
         "min": 0,
@@ -114,7 +114,7 @@
         "max": 100,
         "default": 70
     },
-    "zipcode": {
+    "zip": {
         "label": "Zip Code",
         "type": "zip",
         "default": "60176"

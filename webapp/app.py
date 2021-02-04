@@ -69,8 +69,11 @@ def create_app():
             # Get listing from web form
             listing = get_input_data()
             # Save listing in database
-            DB.session.add(Listing(id=randint(0,100_000), **listing))
+            DB.session.add(Listing(id=randint(0, 100_000), **listing))
             DB.session.commit()
+            # Save listing for next web form
+            update_default_features(listing)
+            # Get predicted rate
             predicted_rate = get_prediction(
                 airbnb_model, transform_input_data(listing))
             predict_message = f"We suggest you set your price at ${predicted_rate:.2f}"
@@ -130,8 +133,8 @@ def get_feature_orders():
         "room_type",
         "accommodates",
         "bedrooms",
-        "bathrooms",
-        "zipcode",
+        "baths",
+        "zip",
         # "bed_type",
         # "cancellation_policy",
         # "cleaning_fee",
@@ -184,3 +187,17 @@ def get_prediction(model, listing):
         df = pd.DataFrame(listing)[get_feature_orders()]
 
     return model.predict(df)[0]
+
+
+def update_default_features(listing):
+    """Updates features.json file with most recent listing"""
+    with open('features.json', 'rw') as file:
+        data = json.load(file)
+        # make necessary changes
+        data['accommodates']['default'] = listing['accommodates']
+        data['bedrooms']['default'] = listing['bedrooms']
+        data['baths']['default'] = listing['baths']
+        data['zip']['default'] = listing['zip']
+
+        # save to file
+        json.dump(data, file)

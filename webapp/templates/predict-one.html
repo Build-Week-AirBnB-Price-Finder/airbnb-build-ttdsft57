@@ -6,17 +6,19 @@
     <p>{{ message }}</p>
     <form action="/predict-one" method="post">
         {% for feature, attributes in forms.items() %}
+        <label for="{{ feature }}">{{ attributes['label'] }}</label>
         {% if attributes['type']=="number" %}
-        <label for="{{ feature }}">{{ attributes['label'] }}</label>
         <input type="number" name="{{ feature }}" min="{{ attributes['min'] }}" max="{{ attributes['max'] }}"
-            step="{{ attributes['step'] }}">
+            step="{{ attributes['step'] }}" value="{{ attributes['default'] }}">
         {% elif attributes['type'] in ["choice", "bool"] %}
-        <label for="{{ feature }}">{{ attributes['label'] }}</label>
         <select name="{{ feature }}" id="{{ feature }}">
             {% for option in attributes['options'] %}
             <option value="{{ option }}">{{ option }}</option>
             {% endfor %}
         </select>
+        {% elif attributes['type'] == "zip" %}
+        <input type="text" name="{{ feature }}" pattern="[0-9]{5}" title="Five digit zip code" ,
+            value="{{ attributes['default'] }}">
         {% endif %}
         {% endfor %}
         <input type="submit" value="Find Optimal Price">

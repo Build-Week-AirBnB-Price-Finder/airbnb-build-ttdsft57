@@ -1,5 +1,6 @@
 """Main app/routing file for AIrBnB Price Finder."""
 
+import json
 import os
 from os import getenv
 from tempfile import mkdtemp
@@ -16,6 +17,61 @@ from sklearn.pipeline import make_pipeline
 from .models import DB, Host, Listing
 
 
+def load_features():
+    """Loads features file and returns a dictionary"""
+    feature_order = get_feature_orders()
+    with open('features.json') as file:
+        all_possible = json.load(file)
+        # Restrict feature dictionary to features used in the model
+        features = {feature: all_possible[feature]
+                    for feature in feature_order}
+        return features
+
+
+def get_feature_orders():
+    """
+    Returns an ordered list of features to use on webpage 
+    and for model prediction (dataframe columns must be in correct order so that
+    model.predict(dataframe) will perform correctly)
+    """
+    feature_order = [
+        "bedrooms",
+        "bathrooms",
+        "zipcode",
+        "room_type",
+        "accommodates",
+        "property_type",
+        # "bed_type",
+        # "cancellation_policy",
+        # "cleaning_fee",
+        # "city",
+        # "instant_bookable",
+        # "number_of_reviews",
+        # "review_scores_rating",
+        # "beds",
+    ]
+    return feature_order
+
+
+def get_input_data():
+    """
+    Takes data input from website and returns a dictionary with valid data to be
+    saved in database or passed into prediction model
+    """
+    listing = {}
+    features = load_features()
+    data = request.form.to_dict(flat=False)
+    for key, value in data.items():
+        if features[key]['type'] == "number":
+            listing[key] = [float(value[0])]
+        elif features[key]['type'] == "bool":
+            listing[key] = [bool(value[0])]
+        else:
+            listing[key] = value
+
+    return listing
+
+
 def create_app():
 
     # Instantiate flask app object
@@ -29,68 +85,11 @@ def create_app():
     # Initialize SQLAlchemy DB
     DB.init_app(app)
 
-    # Features used
-    # Dictionary takes
-    #   - label:            for displaying in listing.html
-    #   - type:             for specifying what type of input form is needed
-    #   - options:          if type is choice
-    #   - min, max, step:   if type is number
-    features = {
-        "property_type": {"label": "Property Type",
-                          "type": "choice",
-                          "options": ['Apartment', 'House', 'Condominium',
-                                      'Townhouse', 'Loft']
-                          },
-        "city": {"label": "City",
-                 "type": "choice",
-                 "options": ['NYC', 'LA', 'SF', 'DC', 'Chicago']},
-        "room_type": {"label": "Room Type",
-                      "type": "choice",
-                      "options": ['Entire home/apt', 'Private room', 'Shared room']},
-        "accommodates": {"label": "Accommodates",
-                         "type": "number",
-                         "min": 0,
-                         "max": 16,
-                         "step": 1},
-        "bedrooms": {"label": "Bedrooms",
-                     "type": "number",
-                     "min": 0,
-                     "max": 10,
-                     "step": 1},
-        "beds": {"label": "Beds",
-                 "type": "number",
-                 "min": 0,
-                 "max": 18,
-                 "step": 1},
-        "bathrooms": {"label": "Bathrooms",
-                      "type": "number",
-                      "min": 0,
-                      "max": 8,
-                      "step": 0.5},
-        "bed_type": {"label": "Bed Type",
-                     "type": "choice",
-                     "options": ['Real Bed', 'Futon', 'Pull-out Sofa',
-                                 'Airbed', 'Couch']},
-        "cancellation_policy": {"label": "Cancellation Policy",
-                                "type": "choice",
-                                "options": ['strict', 'flexible', 'moderate',
-                                            'super_strict_30',
-                                            'super_strict_60']},
-        "cleaning_fee": {"label": "Cleaning Fee?",
-                         "type": "bool",
-                         "options": ['True', 'False']},
-        "instant_bookable": {"label": "Instant Bookable?",
-                             "type": "bool",
-                             "options": ['True', 'False']},
-        "number_of_reviews": {"label": "Number of Reviews",
-                              "type": "number",
-                              "min": 0,
-                              "max": 605},
-        "review_scores_rating": {"label": "Review Scores Rating",
-                                 "type": "number",
-                                 "min": 20,
-                                 "max": 100},
-    }
+    # Load features dictionary for passing into jinja templates and validation
+    features = load_features()
+
+    # Load prediction model
+    airbnb_model = load("model.joblib")
 
     # Save data (for development purposes)
     listing = {}
@@ -105,9 +104,7 @@ def create_app():
     def add_listing():
         """Add a new listing to the database"""
         if request.method == "POST":
-            data = request.form.to_dict(flat=False)
-            for key, value in data.items():
-                listing[key] = value
+            listing = get_input_data()
             # TODO - save listing into database
         return render_template('listing.html', title="Add a Listing", forms=features, message=f"{listing}")
 
@@ -119,35 +116,13 @@ def create_app():
     @app.route('/predict-one', methods=["GET", "POST"])
     def predict_one():
         """Uses trained model to make prediction on a given listing"""
-        feature_order = ["property_type",
-                         "room_type",
-                         "accommodates",
-                         "bathrooms",
-                         "bed_type",
-                         "cancellation_policy",
-                         "cleaning_fee",
-                         "city",
-                         "instant_bookable",
-                         "number_of_reviews",
-                         "review_scores_rating",
-                         "bedrooms",
-                         "beds"]
-        airbnb_model = load("model.joblib")
-        predict_message = f"{listing}"
+
+        predict_message = "Please enter your listing details"
         # Retrieve and transform data from forms
         if request.method == "POST":
-            data = request.form.to_dict(flat=False)
-            for key, value in data.items():
-                if features[key]['type'] == "number":
-                    listing[key] = [float(value[0])]
-                elif features[key]['type'] == "bool":
-                    listing[key] = [bool(value[0])]
-                    print(listing[key])
-                else:
-                    listing[key] = value
+            listing = get_input_data()
             data_types = {"cleaning_fee": bool, "instant_bookable": bool}
-            df = pd.DataFrame(data)[feature_order].astype(data_types)
-
+            df = (pd.DataFrame(listing).astype(data_types))[feature_order]
             get_price = airbnb_model.predict(df)[0]
             predict_message = f"We suggest you set your price at ${get_price:.2f}"
 

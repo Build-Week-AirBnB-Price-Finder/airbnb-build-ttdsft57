@@ -72,10 +72,13 @@ def create_app():
         return render_template('predict-one.html', title="Price Finder", forms=features, message=predict_message)
 
     @app.route('/reset')
-    def reset():
-        """Resets the Listings and Hosts tables only"""
-        # TODO - Drop Listings and Hosts table, create all tables again
-        return "Coming Soon!"
+    def test_db():
+        # reset last saved listing
+        listing = {}
+        # Reset database
+        DB.drop_all()
+        DB.create_all()
+        return "DB created"
 
     # SECRET ROUTES
 
@@ -101,12 +104,6 @@ def create_app():
         airbnb_model = load("model.joblib")
         get_price = str(airbnb_model.predict(test_array))
         return get_price
-
-    @app.route('/test-db')
-    def test_db():
-        DB.drop_all()
-        DB.create_all()
-        return "DB created"
 
     return app
 

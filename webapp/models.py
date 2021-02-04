@@ -5,16 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 DB = SQLAlchemy()
 
 
-# Host Table
-class Host(DB.Model):
-    """AIrBnB hosts corresponding to Listings"""
-    id = DB.Column(DB.Integer, primary_key=True)
-    name = DB.Column(DB.String, nullable=False)
-
-    def __repr__(self):
-        return f"<Host: {self.name}>"
-
-
 # Listing Table
 class Listing(DB.Model):
     """AIrBnB listings corresponding to Hosts"""

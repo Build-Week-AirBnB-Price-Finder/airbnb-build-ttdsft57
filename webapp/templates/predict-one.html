@@ -4,7 +4,7 @@
 <div id="listing-info">
     <h2>{{ title }}</h2>
     <p>{{ message }}</p>
-    <form action="/add_listing" method="post">
+    <form action="/predict-one" method="post">
         {% for feature, attributes in forms.items() %}
         {% if attributes['type']=="number" %}
         <label for="{{ feature }}">{{ attributes['label'] }}</label>
@@ -17,10 +17,9 @@
             <option value="{{ option }}">{{ option }}</option>
             {% endfor %}
         </select>
-
         {% endif %}
         {% endfor %}
-        <input type="submit" value="Add Listing">
+        <input type="submit" value="Find Optimal Price">
     </form>
 
 </div>

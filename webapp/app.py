@@ -129,12 +129,12 @@ def get_feature_orders():
     model.predict(dataframe) will perform correctly)
     """
     feature_order = [
+        "property_type",
+        "room_type",
+        "accommodates",
         "bedrooms",
         "bathrooms",
         "zipcode",
-        "room_type",
-        "accommodates",
-        "property_type",
         # "bed_type",
         # "cancellation_policy",
         # "cleaning_fee",

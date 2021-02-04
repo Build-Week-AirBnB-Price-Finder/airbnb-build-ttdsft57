@@ -13,8 +13,8 @@ class Listing(DB.Model):
     room_type = DB.Column(DB.String, nullable=False)
     accommodates = DB.Column(DB.Integer, nullable=False)
     bedrooms = DB.Column(DB.Integer, nullable=False)
-    bathrooms = DB.Column(DB.Numeric, nullable=False)
-    zipcode = DB.Column(DB.Integer, nullable=False)
+    baths = DB.Column(DB.Numeric, nullable=False)
+    zip = DB.Column(DB.Integer, nullable=False)
 
     def __repr__(self):
         # TODO - Replace self.id with more descriptive location information

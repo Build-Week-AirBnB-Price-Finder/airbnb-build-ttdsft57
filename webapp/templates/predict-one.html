@@ -4,7 +4,7 @@
 <div id="listing-info">
     <h2>{{ title }}</h2>
 
-    <form action="/predict-one" method="post">
+    <form action="/" method="post">
         {% for feature, attributes in forms.items() %}
         <label for="{{ feature }}">{{ attributes['label'] }}</label>
         {% if attributes['type']=="number" %}

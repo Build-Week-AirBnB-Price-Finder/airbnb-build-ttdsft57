@@ -3,6 +3,7 @@
 import json
 import os
 from os import getenv
+from random import randint
 from tempfile import mkdtemp
 
 import numpy as np
@@ -14,7 +15,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import make_pipeline
 
-from .models import DB, Host, Listing
+from .models import DB, Listing
 
 
 def create_app():
@@ -65,8 +66,13 @@ def create_app():
         predict_message = "Please enter your listing details"
         # Retrieve and transform data from forms
         if request.method == "POST":
+            # Get listing from web form
             listing = get_input_data()
-            predicted_rate = get_prediction(airbnb_model, listing)
+            # Save listing in database
+            DB.session.add(Listing(id=randint(0,100_000), **listing))
+            DB.session.commit()
+            predicted_rate = get_prediction(
+                airbnb_model, transform_input_data(listing))
             predict_message = f"We suggest you set your price at ${predicted_rate:.2f}"
 
         return render_template('predict-one.html', title="Price Finder", forms=features, message=predict_message)
@@ -90,15 +96,9 @@ def create_app():
                               "room_type": ["Entire home/apt"],
                               "accommodates": [16],
                               "bathrooms": [8],
-                              "bed_type": ['Real Bed'],
-                              "cancellation_policy": ['strict'],
-                              "cleaning_fee": [True],
-                              "city": ['NYC'],
-                              "instant_bookable": [True],
-                              "number_of_reviews": [605],
-                              "review_scores_rating": [100],
                               "bedrooms": [10],
-                              "beds": [18]}
+                              "zipcode": 60176
+                              }
 
         test_array = pd.DataFrame(data=features_populated)
         airbnb_model = load("model.joblib")
@@ -154,13 +154,21 @@ def get_input_data():
     data = request.form.to_dict(flat=False)
     for key, value in data.items():
         if features[key]['type'] == "number":
-            listing[key] = [float(value[0])]
+            listing[key] = float(value[0])
         elif features[key]['type'] == "bool":
-            listing[key] = [bool(value[0])]
+            listing[key] = bool(value[0])
+        elif features[key]['type'] == "zip":
+            listing[key] = int(value[0])
         else:
-            listing[key] = value
+            listing[key] = value[0]
 
     return listing
+
+
+def transform_input_data(data):
+    """Transform input data dictionary into format ready to use with 
+        model.predict"""
+    return {key: [value] for key, value in data.items()}
 
 
 def get_prediction(model, listing):

@@ -3,7 +3,7 @@
 {% block content %}
 <div id="listing-info">
     <h2>{{ title }}</h2>
-    <p>{{ message }}</p>
+
     <form action="/predict-one" method="post">
         {% for feature, attributes in forms.items() %}
         <label for="{{ feature }}">{{ attributes['label'] }}</label>
@@ -23,6 +23,7 @@
         {% endfor %}
         <input type="submit" value="Find Optimal Price">
     </form>
+    <h2>{{ message }}</h2>
 
 </div>
 

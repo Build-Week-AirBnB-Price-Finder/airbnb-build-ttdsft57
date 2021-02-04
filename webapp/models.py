@@ -19,4 +19,4 @@ class Listing(DB.Model):
     def __repr__(self):
         # TODO - Replace self.id with more descriptive location information
         rep = f"""<Listing: Property Type - {self.property_type}, Zipcode - {self.zipcode}>"""
-        return
+        return rep

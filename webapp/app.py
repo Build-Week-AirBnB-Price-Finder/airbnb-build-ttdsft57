@@ -121,14 +121,6 @@ def get_feature_orders():
         "bedrooms",
         "baths",
         "zip",
-        # "bed_type",
-        # "cancellation_policy",
-        # "cleaning_fee",
-        # "city",
-        # "instant_bookable",
-        # "number_of_reviews",
-        # "review_scores_rating",
-        # "beds",
     ]
     return feature_order
 

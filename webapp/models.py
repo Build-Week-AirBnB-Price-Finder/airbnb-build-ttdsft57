@@ -17,6 +17,5 @@ class Listing(DB.Model):
     zip = DB.Column(DB.Integer, nullable=False)
 
     def __repr__(self):
-        # TODO - Replace self.id with more descriptive location information
-        rep = f"""<Listing: Property Type - {self.property_type}, Zipcode - {self.zipcode}>"""
+        rep = f"""Id: {self.id} Property Type: {self.property_type} Room Type: {self.room_type} Accommodates: {self.accommodates} Bedrooms: {self.bedrooms} Baths: {self.baths} Zip: {self.zip}"""
         return rep

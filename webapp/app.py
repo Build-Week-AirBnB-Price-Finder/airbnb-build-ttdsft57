@@ -92,6 +92,16 @@ def create_app():
         DB.create_all()
         return "DB created"
 
+    @app.route('/return-all')
+    def return_db_entries():
+        temp_db_query = Listing.query.all()
+        #print(temp_db)
+        list_of_listings = []
+        for id in temp_db_query:
+            list_of_listings.append(id)
+        print("A" + str(list_of_listings))
+        return render_template('return-all.html', title="List of Listings", listings=list_of_listings)
+
     return app
 
 

@@ -72,7 +72,7 @@ def create_app():
 
             # Save listing for next web form
             update_default_features(listing)
-            # Refresh features
+            # Refresh features (for input forms)
             features = load_features()
 
             # Save listing in database
@@ -121,6 +121,14 @@ def get_feature_orders():
         "bedrooms",
         "baths",
         "zip",
+        # "bed_type",
+        # "cancellation_policy",
+        # "cleaning_fee",
+        # "city",
+        # "instant_bookable",
+        # "number_of_reviews",
+        # "review_scores_rating",
+        # "beds",
     ]
     return feature_order
 
@@ -177,7 +185,6 @@ def update_default_features(listing):
         data['zip']['default'] = listing['zip']
         data['property_type']['default'] = listing['property_type']
         data['room_type']['default'] = listing['room_type']
-
     # Save dictionary to json file
     with open('features.json', 'w+') as file:
         json.dump(data, file)

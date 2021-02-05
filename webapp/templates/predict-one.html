@@ -12,6 +12,7 @@
             step="{{ attributes['step'] }}" value="{{ attributes['default'] }}">
         {% elif attributes['type'] in ["choice", "bool"] %}
         <select name="{{ feature }}" id="{{ feature }}">
+            <option value="{{ attributes['default'] }}">{{ attributes['default'] }}</option><!-- DEFAULT VALUE -->
             {% for option in attributes['options'] %}
             <option value="{{ option }}">{{ option }}</option>
             {% endfor %}

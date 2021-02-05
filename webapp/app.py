@@ -24,8 +24,8 @@ def create_app():
     app = Flask(__name__)
 
     # Set DB environment variables
-    # getenv("DATABASE_URL")
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
+    app.config["SQLALCHEMY_DATABASE_URI"] = getenv(
+        "DATABASE_URL")  # "sqlite:///db.sqlite3" for local testing
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Initialize SQLAlchemy DB
@@ -69,8 +69,12 @@ def create_app():
         if request.method == "POST":
             # Get listing from web form
             listing = get_input_data()
+
             # Save listing for next web form
             update_default_features(listing)
+            # Refresh features
+            features = load_features()
+
             # Save listing in database
             DB.session.add(Listing(id=randint(0, 100_000), **listing))
             DB.session.commit()
@@ -202,6 +206,7 @@ def update_default_features(listing):
         data['zip']['default'] = listing['zip']
         data['property_type']['default'] = listing['property_type']
         data['room_type']['default'] = listing['room_type']
+
     # Save dictionary to json file
     with open('features.json', 'w+') as file:
         json.dump(data, file)

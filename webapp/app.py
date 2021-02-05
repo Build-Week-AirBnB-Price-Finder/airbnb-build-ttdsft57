@@ -69,8 +69,10 @@ def create_app():
         if request.method == "POST":
             # Get listing from web form
             listing = get_input_data()
-            # Save listing for next web form
-            update_default_features(listing)
+
+            # Save listing for next web form and update features
+            features = update_default_features(listing)
+
             # Save listing in database
             DB.session.add(Listing(id=randint(0, 100_000), **listing))
             DB.session.commit()
@@ -173,6 +175,9 @@ def update_default_features(listing):
         data['zip']['default'] = listing['zip']
         data['property_type']['default'] = listing['property_type']
         data['room_type']['default'] = listing['room_type']
+
     # Save dictionary to json file
     with open('features.json', 'w+') as file:
         json.dump(data, file)
+
+    return data

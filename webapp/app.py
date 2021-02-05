@@ -94,25 +94,6 @@ def create_app():
         DB.create_all()
         return "DB created"
 
-    # SECRET ROUTES
-
-    @app.route('/examples')
-    def examples():
-        """Adds examples to the database"""
-        # Model order: propertytype roomtype accom bathrooms bedtype cancell cleaning city inst numrev revscore bedrooms beds
-        features_populated = {"property_type": ['Apartment'],
-                              "room_type": ["Entire home/apt"],
-                              "accommodates": [16],
-                              "bathrooms": [8],
-                              "bedrooms": [10],
-                              "zipcode": 60176
-                              }
-
-        test_array = pd.DataFrame(data=features_populated)
-        airbnb_model = load("model.joblib")
-        get_price = str(airbnb_model.predict(test_array))
-        return get_price
-
     return app
 
 
@@ -140,14 +121,6 @@ def get_feature_orders():
         "bedrooms",
         "baths",
         "zip",
-        # "bed_type",
-        # "cancellation_policy",
-        # "cleaning_fee",
-        # "city",
-        # "instant_bookable",
-        # "number_of_reviews",
-        # "review_scores_rating",
-        # "beds",
     ]
     return feature_order
 
@@ -163,8 +136,6 @@ def get_input_data():
     for key, value in data.items():
         if features[key]['type'] == "number":
             listing[key] = float(value[0])
-        elif features[key]['type'] == "bool":
-            listing[key] = bool(value[0])
         elif features[key]['type'] == "zip":
             listing[key] = int(value[0])
         else:
